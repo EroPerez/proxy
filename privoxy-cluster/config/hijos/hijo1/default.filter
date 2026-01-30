@@ -1,0 +1,26 @@
+#####################################################################
+# default.filter - Example filters for Privoxy
+# -------------------------------------------------------------
+# You can add or modify filters here. Each filter defines
+# a regular expression replacement that can modify HTML content.
+#####################################################################
+
+# Example: Remove simple HTML comments
+FILTER: remove-html-comments Remove HTML comments
+s/<!--.*?-->//g
+
+# Example: Remove tracking parameters (utm_*)
+FILTER: remove-tracking-params Remove common tracking query params
+s/([?&])utm_[^&]+//g
+
+# Example: Strip inline event handlers (basic protection)
+FILTER: strip-inline-events Remove inline JavaScript events
+s/\son[a-z]+="[^"]*"//gi
+
+# Example: Remove noscript tags content (optional)
+FILTER: strip-noscript Remove <noscript> content
+s#<noscript>.*?</noscript>##gis
+
+#####################################################################
+# End of default.filter
+#####################################################################

@@ -1,0 +1,24 @@
+# config/templates/config-hijo.template
+toggle  0
+enable-remote-toggle  0
+enable-remote-http-toggle  0
+
+# Configuracion basica sin acciones complejas
+keep-alive-timeout 300
+socket-timeout 300
+forwarded-connect-retries 2
+
+# Usar archivos de acciones basicos si existen
+# actionsfile match-all.action
+# actionsfile default.action
+
+# filterfile default.filter
+
+listen-address  0.0.0.0:8119
+
+# Logging
+logdir /var/log/privoxy
+logfile privoxy-2.log
+
+# Deshabilitar caracteristicas que requieren archivos adicionales
+enable-edit-actions 0

@@ -1,0 +1,30 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    privoxy \
+    curl \
+    iproute2 \
+    iptables \
+    net-tools \
+    gettext-base \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar scripts
+COPY scripts/ /usr/local/bin/
+RUN chmod +x /usr/local/bin/*.sh
+
+# Crear directorios necesarios
+RUN mkdir -p /var/log/privoxy /etc/privoxy
+
+# Copiar archivos de acciones por defecto
+COPY config/templates/*.action /tmp/privoxy/
+COPY config/templates/*.filter /tmp/privoxy/
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD ["healthcheck.sh", "default"]
+
+EXPOSE 8080
+
+CMD ["startup.sh"]

@@ -1,0 +1,24 @@
+# config/padre/config
+listen-address  0.0.0.0:8080
+toggle  0
+enable-remote-toggle  0
+enable-remote-http-toggle  0
+
+# Balanceo Round Robin entre hijos
+forward / hijo1.privoxy:8118
+forward / hijo2.privoxy:8119
+forward / hijo3.privoxy:8120
+forward / hijo4.privoxy:8121
+
+# Configuracion de performance
+keep-alive-timeout 300
+socket-timeout 300
+forwarded-connect-retries 1
+max-client-connections 1000
+
+# Logging
+logdir /var/log/privoxy
+logfile privoxy.log
+
+# Deshabilitar edit-actions para evitar errores
+enable-edit-actions 0

@@ -1,0 +1,192 @@
+version: '3.8'
+
+services:
+  # Balanceador padre
+  privoxy-padre:
+    build:
+      context: .
+      dockerfile: Dockerfile.privoxy
+    container_name: privoxy-padre
+    ports:
+      - "${BALANCER_PORT}:8080"
+    volumes:
+      - ./config/padre:/etc/privoxy
+      - ./logs/padre:/var/log/privoxy
+    networks:
+      - frontend
+      - backend-hijo-1
+      - backend-hijo-2
+      - backend-hijo-3
+      - backend-hijo-4
+    environment:
+      - INSTANCE_TYPE=padre
+      - LOG_LEVEL=${LOG_LEVEL}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "padre"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio hijo 1 - Usa eth0
+  privoxy-hijo-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.privoxy
+    container_name: privoxy-hijo-1
+    volumes:
+      - ./config/hijos/hijo1:/etc/privoxy
+      - ./logs/hijos/hijo1:/var/log/privoxy
+    networks:
+      backend-hijo-1:
+        ipv4_address: 192.168.8.10
+        aliases:
+          - hijo1.privoxy
+    environment:
+      - INSTANCE_TYPE=hijo
+      - INSTANCE_NUMBER=1
+      - INTERFACE=${HIJO1_INTERFACE}
+      - PORT=8118
+      - LOG_LEVEL=${LOG_LEVEL}
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.route_localnet=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "hijo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio hijo 2 - Usa eth1
+  privoxy-hijo-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.privoxy
+    container_name: privoxy-hijo-2
+    volumes:
+      - ./config/hijos/hijo2:/etc/privoxy
+      - ./logs/hijos/hijo2:/var/log/privoxy
+    networks:
+      backend-hijo-2:
+        ipv4_address: 192.168.2.10
+        aliases:
+          - hijo2.privoxy
+    environment:
+      - INSTANCE_TYPE=hijo
+      - INSTANCE_NUMBER=2
+      - INTERFACE=${HIJO2_INTERFACE}
+      - PORT=8119
+      - LOG_LEVEL=${LOG_LEVEL}
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.route_localnet=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "hijo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio hijo 3 - Usa eth2
+  privoxy-hijo-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.privoxy
+    container_name: privoxy-hijo-3
+    volumes:
+      - ./config/hijos/hijo3:/etc/privoxy
+      - ./logs/hijos/hijo3:/var/log/privoxy
+    networks:
+      backend-hijo-3:
+        ipv4_address: 192.168.3.10
+        aliases:
+          - hijo3.privoxy
+    environment:
+      - INSTANCE_TYPE=hijo
+      - INSTANCE_NUMBER=3
+      - INTERFACE=${HIJO3_INTERFACE}
+      - PORT=8120
+      - LOG_LEVEL=${LOG_LEVEL}
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.route_localnet=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "hijo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Servicio hijo 4 - Usa eth4
+  privoxy-hijo-4:
+    build:
+      context: .
+      dockerfile: Dockerfile.privoxy
+    container_name: privoxy-hijo-4
+    volumes:
+      - ./config/hijos/hijo4:/etc/privoxy
+      - ./logs/hijos/hijo4:/var/log/privoxy
+    networks:
+      backend-hijo-4:
+        ipv4_address: 192.168.4.10
+        aliases:
+          - hijo4.privoxy
+    environment:
+      - INSTANCE_TYPE=hijo
+      - INSTANCE_NUMBER=3
+      - INTERFACE=${HIJO3_INTERFACE}
+      - PORT=8120
+      - LOG_LEVEL=${LOG_LEVEL}
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.route_localnet=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "hijo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  frontend:
+    driver: bridge
+  backend-hijo-1:
+    driver: macvlan
+    driver_opts:
+      parent: ${HIJO1_INTERFACE}
+    ipam:
+      config:
+        - subnet: "192.168.8.0/24"
+          gateway: "192.168.8.1"
+
+  backend-hijo-2:
+    driver: macvlan
+    driver_opts:
+      parent: ${HIJO2_INTERFACE}
+    ipam:
+      config:
+        - subnet: "192.168.2.0/24"
+          gateway: "192.168.2.1"
+
+  backend-hijo-3:
+    driver: macvlan
+    driver_opts:
+      parent: ${HIJO3_INTERFACE}
+    ipam:
+      config:
+        - subnet: "192.168.3.0/24"
+          gateway: "192.168.3.1"
+
+  backend-hijo-4:
+    driver: macvlan
+    driver_opts:
+      parent: ${HIJO4_INTERFACE}
+    ipam:
+      config:
+        - subnet: "192.168.4.0/24"
+          gateway: "192.168.4.1"

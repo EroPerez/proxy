@@ -1,0 +1,5 @@
+# default.action - basic default rules for Privoxy
+
+{ +filter }
+# Example: disable filters by default
+/

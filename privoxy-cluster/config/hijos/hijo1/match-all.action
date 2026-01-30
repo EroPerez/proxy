@@ -1,0 +1,7 @@
+# match-all.action - default global actions file for Privoxy
+# Applies to all sites unless overridden by other rules.
+
+{ +block }
+# Example: block nothing by default
+# To block everything uncomment the line below:
+# /

@@ -1,4 +1,3 @@
-```markdown
 # 🔐 Proxy
 
 Cluster de servidores proxy usando **Privoxy** para enrutamiento avanzado y privacidad mejorada.
@@ -26,4 +25,4 @@ proxy/
 ## 📄 Licencia
 
 MIT
-```
+
